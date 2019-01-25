@@ -1,0 +1,100 @@
+server:
+  port: 8080
+
+#thymeleaf
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    enabled: true
+    encoding: UTF-8
+    mode: LEGACYHTML5
+    suffix: .html
+    cache: false
+#    template-resolver-order: 2
+
+  #druid
+  datasource:
+    url: jdbc:mysql://localhost:3306/miaosha?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat
+    maxActive: 100
+    initialSize: 100
+    maxWait: 60000
+    minIdle: 1000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+
+    #static
+  resources:
+    add-mappings: true
+    chain:
+      cache: true
+      enabled: true
+      gzipped: true
+      html-application-cache: true
+    cache:
+      period: 3600s
+  static-locations: classpath:/static/
+
+ #rabbitmq
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        concurrency: 10
+        max-concurrency: 10
+        prefetch: 1
+        auto-startup: true
+        default-requeue-rejected: true
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+        max-interval: 10000ms
+        multiplier: 1.0
+
+#直接注入redisTemplate
+  redis:
+      port: 6379
+      host: 127.0.0.1
+
+  #通过RedisConfig获取文件配置
+redis:
+  host: localhost
+  port: 6379
+  timeout: 10
+  poolMaxTotal: 1000
+  poolMaxIdle: 500
+  poolMaxWait: 500
+
+#mybatis
+mybatis:
+  type-aliases-package: com.imooc.miaosha.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 3000
+  mapper-locations: classpath:com/imooc/miaosha/mapper/*.xml
+
+
+
+
+
+
+
+
+
