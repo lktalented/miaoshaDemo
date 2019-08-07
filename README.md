@@ -47,104 +47,101 @@
   
 ##参考文档<br>
   
-秒杀系统思路：
-https://blog.csdn.net/goldenfish1919/article/details/78898465
+##秒杀系统思路：<br>
+  >>https://blog.csdn.net/goldenfish1919/article/details/78898465<br> 
 
-redis缓存更新的方法：
-https://www.cnblogs.com/westboy/p/8696607.html
+##redis缓存更新的方法：<br> 
+  >>https://www.cnblogs.com/westboy/p/8696607.html<br> 
 
-秒杀优化：
-1.页面缓存:
-2.对象缓存：
-3.页面静态化：
-https://blog.csdn.net/fmwind/article/details/81235401
-4.rebbitmq
-5.隐藏秒杀地址
-6.限流防刷
-
-
-github秒杀项目：
-https://github.com/dcg123/miaosha
+##秒杀优化：<br> 
+  >>1.页面缓存:<br> 
+  >>2.对象缓存：<br> 
+  >>3.页面静态化：https://blog.csdn.net/fmwind/article/details/81235401<br> 
+  >>4.rabbitmq<br> 
+  >>5.隐藏秒杀地址<br> 
+  >>6.限流防刷<br> 
 
 
-2次加密：
-https://blog.csdn.net/weixin_38035852/article/details/81052431
-
-shiro:
-https://www.cnblogs.com/maofa/p/6407102.html
-
-分布式session:
-https://blog.csdn.net/u011213044/article/details/80525997
-
-SpringBoot中通过实现WebMvcConfigurer完成参数校验：
-https://blog.csdn.net/qq_38439885/article/details/80238813
-
-rabbitmq：
-rabbitmq及kafka的比对：
-https://blog.csdn.net/yunfeng482/article/details/72856762
-
-rabbitmq的应用场景：
-https://blog.csdn.net/qq_14901335/article/details/80451052
-
-秒杀系统的设计：
-https://www.jianshu.com/p/d789ea15d060
-
-问题解疑：
-1.如何解决卖超问题
-在sql加上判断防止数据边为负数 
-数据库加唯一索引防止用户重复购买
-redis预减库存减少数据库访问　内存标记减少redis访问　请求先入队列缓冲，异步下单，增强用户体验
-
-2.订单处理队列rabbitmq
-请求先入队缓冲，异步下单，增强用户体验
-请求出队，生成订单，减少库存
-客户端定时轮询检查是否秒杀成功
-
-3.解决分布式session
-生成随机的uuid作为cookie返回并redis内存写入 
-拦截器每次拦截方法，来重新获根据cookie获取对象
-下一个页面拿到key重新获取对象
-HandlerMethodArgumentResolver 方法 supportsParameter 如果为true 执行 resolveArgument 方法获取miaoshauser对象
-
-4.秒杀安全 -- 安全性设计
-秒杀接口隐藏
-数字公式验证码
-接口防刷限流(通用 注解，拦截器方式)
-
-5.redis的库存如何与数据库的库存保持一致
-redis的数量不是库存,他的作用仅仅只是为了阻挡多余的请求透穿到DB，起到一个保护的作用
-因为秒杀的商品有限，比如10个，让1万个请求区访问DB是没有意义的，因为最多也就只能10个
-请求下单成功，所有这个是一个伪命题，我们是不需要保持一致的
-
-6.redis 预减成功，DB扣减库存失败怎么办
-对用户而言，秒杀不中是正常现象，秒杀中才是意外，单个用户秒杀中本来就是小概率事件，出现这种情况对于用户而言没有任何影响
-对于商户而言，本来就是为了活动拉流量人气的，卖不完还可以省一部分费用，但是活动还参与了，也就没有了任何影响
-对网站而言，最重要的是体验，只要网站不崩溃，对用户而言没有任何影响
-
-7.rabbitmq如何做到消息不重复不丢失即使服务器重启
-exchange持久化
-queue持久化
-发送消息设置MessageDeliveryMode.persisent这个也是默认的行为
-手动确认
-
-8.秒杀类似场景sql的写法注意事项
-1.一定要避免全表扫描，如果扫一张大表的数据就会造成慢查询，导致数据的连接池直接塞满,导致事故
- 首先考虑在where和order by 设计的列上建立索引
- 例如：
- 1. where 子句中对字段进行 null 值判断 . 
- 2. 应尽量避免在 where 子句中使用!=或<>操作符 
- 3. 应尽量避免在 where 子句中使用 or 来连接条件
- 4. in 和 not in 也要慎用，否则会导致全表扫描( 如果索引 会优先走索引 不会导致全表扫描 
-    字段上建了索引后，使用in不会全表扫描，而用not in 会全表扫描 低版本的mysql是两种情况都会全表扫描。
-    5.5版本后以修。而且在优化大表连接查询的时候，有一个方法就是将join操作拆分为in查询)
- 5. select id from t where name like '%abc%' 或者
- 6.select id from t where name like '%abc' 或者
- 7. 若要提高效率，可以考虑全文检索。 
- 8.而select id from t where name like 'abc%' 才用到索引 慢查询一般在测试环境不容易复现
- 9.应尽量避免在 where 子句中对字段进行表达式操作 where num/2 ,num=100*2
-2.合理的使用索引:索引并不是越多越好，使用不当会造成性能开销
-3.尽量避免大事务操作，提高系统并发能力
-4.尽量避免客户端返回大量数据，如果返回则要考虑是否需求合理
+##github秒杀项目：<br> 
+  >>https://github.com/dcg123/miaosha<br> 
 
 
- 
+##2次加密：<br> 
+  >>https://blog.csdn.net/weixin_38035852/article/details/81052431<br> 
+
+##shiro:<br> 
+  >>https://www.cnblogs.com/maofa/p/6407102.html<br> 
+
+##分布式session:<br> 
+  >>https://blog.csdn.net/u011213044/article/details/80525997<br> 
+
+##SpringBoot中通过实现WebMvcConfigurer完成参数校验：<br> 
+  >>https://blog.csdn.net/qq_38439885/article/details/80238813<br> 
+
+##rabbitmq：<br> 
+  >>rabbitmq及kafka的比对：<br> 
+  >>https://blog.csdn.net/yunfeng482/article/details/72856762<br> 
+
+##rabbitmq的应用场景：<br> 
+  >>https://blog.csdn.net/qq_14901335/article/details/80451052<br> 
+
+##秒杀系统的设计：<br> 
+  >>https://www.jianshu.com/p/d789ea15d060<br> 
+
+##问题解疑：<br> 
+##1.如何解决卖超问题<br> 
+  >>在sql加上判断防止数据边为负数   <br> 
+  >>数据库加唯一索引防止用户重复购买<br> 
+  >>redis预减库存减少数据库访问　内存标记减少redis访问　请求先入队列缓冲，异步下单，增强用户体验<br> 
+
+##2.订单处理队列rabbitmq<br>
+  >>请求先入队缓冲，异步下单，增强用户体验<br> 
+  >>请求出队，生成订单，减少库存<br>
+  >>客户端定时轮询检查是否秒杀成功<br>
+
+##3.解决分布式session<br>
+  >>生成随机的uuid作为cookie返回并redis内存写入   <br>
+  >>拦截器每次拦截方法，来重新获根据cookie获取对象<br>
+  >>下一个页面拿到key重新获取对象<br>
+  >>HandlerMethodArgumentResolver 方法 supportsParameter 如果为true 执行 resolveArgument 方法获取miaoshauser对象<br>
+
+##4.秒杀安全 -- 安全性设计<br>
+  >>秒杀接口隐藏<br>
+  >>数字公式验证码<br>
+  >>接口防刷限流(通用 注解，拦截器方式)<br>
+
+##5.redis的库存如何与数据库的库存保持一致<br>
+  >>redis的数量不是库存,他的作用仅仅只是为了阻挡多余的请求透穿到DB，起到一个保护的作用<br>
+  >>因为秒杀的商品有限，比如10个，让1万个请求区访问DB是没有意义的，因为最多也就只能10个<br>
+  >>请求下单成功，所有这个是一个伪命题，我们是不需要保持一致的<br>
+
+##6.redis 预减成功，DB扣减库存失败怎么办<br>
+  >>对用户而言，秒杀不中是正常现象，秒杀中才是意外，单个用户秒杀中本来就是小概率事件，出现这种情况对于用户而言没有任何影响<br>
+  >>对于商户而言，本来就是为了活动拉流量人气的，卖不完还可以省一部分费用，但是活动还参与了，也就没有了任何影响<br>
+  >>对网站而言，最重要的是体验，只要网站不崩溃，对用户而言没有任何影响<br>
+
+##7.rabbitmq如何做到消息不重复不丢失即使服务器重启<br>
+  >>exchange持久化<br>
+  >>queue持久化<br>
+  >>发送消息设置MessageDeliveryMode.persisent这个也是默认的行为<br>
+  >>手动确认<br>
+
+##8.秒杀类似场景sql的写法注意事项<br>
+  >>1.一定要避免全表扫描，如果扫一张大表的数据就会造成慢查询，导致数据的连接池直接塞满,导致事故<br>
+   >>首先考虑在where和order by 设计的列上建立索引<br>
+   >>例如：<br>
+   >> where 子句中对字段进行 null 值判断 <br>. 
+   >> 应尽量避免在 where 子句中使用!=或<>操作符 <br>
+   >> 应尽量避免在 where 子句中使用 or 来连接条件<br>
+   >> in 和 not in 也要慎用，否则会导致全表扫描( 如果索引 会优先走索引 不会导致全表扫描 <br>
+      字段上建了索引后，使用in不会全表扫描，而用not in 会全表扫描 低版本的mysql是两种情况都会全表扫描。<br>
+      5.5版本后以修。而且在优化大表连接查询的时候，有一个方法就是将join操作拆分为in查询)<br>
+   >>select id from t where name like '%abc%' 或者<br>
+   >>select id from t where name like '%abc' 或者<br>
+   >> 若要提高效率，可以考虑全文检索。 <br>
+   >>而select id from t where name like 'abc%' 才用到索引 慢查询一般在测试环境不容易复现<br>
+   >>应尽量避免在 where 子句中对字段进行表达式操作 where num/2 ,num=100*2<br>
+ >>2.合理的使用索引:索引并不是越多越好，使用不当会造成性能开销<br>
+ >>3.尽量避免大事务操作，提高系统并发能力<br>
+ >>4.尽量避免客户端返回大量数据，如果返回则要考虑是否需求合理<br>
+
