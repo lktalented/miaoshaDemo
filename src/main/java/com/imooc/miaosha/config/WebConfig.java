@@ -1,5 +1,6 @@
 package com.imooc.miaosha.config;
 
+import com.imooc.miaosha.access.AccessInteceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -24,6 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private UserArgumentResolver userArgumentResolver;
 
+    @Autowired
+    private AccessInteceptor accessInteceptor;
+
     /**
      * 添加登录用户参数解析器实现
      * @param argumentResolvers
@@ -31,6 +35,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(userArgumentResolver);
+    }
+
+    /**
+     * 添加限流拦截器(默认拦截器执行顺序在参数解析器之前)
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(accessInteceptor);
     }
 
     @Override
@@ -55,11 +68,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
 
     }
 

@@ -1,5 +1,6 @@
 package com.imooc.miaosha.controller;
 
+import com.imooc.miaosha.access.AccessLimit;
 import com.imooc.miaosha.domain.MiaoshaOrder;
 import com.imooc.miaosha.domain.MiaoshaUser;
 import com.imooc.miaosha.domain.OrderInfo;
@@ -21,6 +22,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -73,11 +79,18 @@ public class MiaoshaController implements InitializingBean {
     @ResponseBody
     public Result<Integer> miaosha(Model model, MiaoshaUser user,
                                    @RequestParam("goodsId")long goodsId,
-                                   @PathVariable("path") String path){
+                                   @PathVariable("path") String path,
+                                   @RequestParam(value="verifyCode", defaultValue="0") int verifyCode){
         model.addAttribute("user", user);
         if (user == null){
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        //查看验证码是否正确
+        boolean codeCheck = miaoshaService.checkVerifyCode(user,goodsId,verifyCode);
+        if (!codeCheck){
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
+        }
+
         //验证path
          boolean check = miaoshaService.checkPath(user,goodsId,path);
         if (!check){
@@ -126,6 +139,14 @@ public class MiaoshaController implements InitializingBean {
 
     }
 
+    /**
+     * 获取path 隐藏秒杀接口
+     * 自定义注解 限制在规定时间内 请求次数
+     * seconds 代表秒数
+     * maxCount 代表最大请求数
+     * needLogin 是否需要登录
+     */
+    @AccessLimit(seconds=5, maxCount=5, needLogin = true )
     @RequestMapping(value="/path",method = RequestMethod.GET)
     @ResponseBody
     public Result<String> getMiaoshaPath(MiaoshaUser user,
@@ -136,6 +157,30 @@ public class MiaoshaController implements InitializingBean {
         String path = miaoshaService.createMiaoshaPath(user,goodsId);
         return Result.success(path);
 
+    }
+
+
+    /**
+     * 获取验证码
+     */
+    @RequestMapping(value = "/verifyCode",method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getMiaoshaVerifyCode(HttpServletRequest request, MiaoshaUser user, @RequestParam("goodsId") long goodsId,
+                                               HttpServletResponse response){
+        if (user==null){
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        try {
+            BufferedImage image  = miaoshaService.createVerifyCode(user, goodsId);
+            OutputStream out = response.getOutputStream();
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.error(CodeMsg.MIAOSHA_FAIL);
+        }
     }
 
 //    @RequestMapping("/do_miaosha")

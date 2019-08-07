@@ -4,6 +4,8 @@ import com.imooc.miaosha.domain.MiaoshaUser;
 import com.imooc.miaosha.domain.OrderInfo;
 import com.imooc.miaosha.vo.GoodsVo;
 
+import java.awt.image.BufferedImage;
+
 /**
  * TODO
  * luokai
@@ -18,4 +20,8 @@ public interface MiaoshaService {
     String createMiaoshaPath(MiaoshaUser user, long goodsId);
 
     boolean checkPath(MiaoshaUser user, long goodsId, String path);
+
+    BufferedImage createVerifyCode(MiaoshaUser user, long goodsId);
+
+    boolean checkVerifyCode(MiaoshaUser user, long goodsId, int verifyCode);
 }
